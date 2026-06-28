@@ -1,0 +1,60 @@
+package views
+
+import "fmt"
+
+type Price struct {
+	NOKPerKWh float64 `json:"NOK_per_kWh"`
+	TimeStart string  `json:"time_start"`
+	TimeEnd   string  `json:"time_end"`
+}
+
+templ PricesPage(prices []Price, area string) {
+	<html>
+		<head>
+			<title>Strømpriser { area }</title>
+			<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+		</head>
+		<body>
+			<h1>Strømpriser for { area }</h1>
+			<canvas id="priceChart" height="100"></canvas>
+			<table border="1">
+				<tr>
+					<th>Start</th>
+					<th>End</th>
+					<th>Pris (NOK/kWh)</th>
+				</tr>
+				for _, p := range prices {
+					<tr>
+						<td>{ p.TimeStart }</td>
+						<td>{ p.TimeEnd }</td>
+						<td>{ fmt.Sprintf("%.4f", p.NOKPerKWh) }</td>
+					</tr>
+				}
+			</table>
+			<script>
+		const prices = {{ prices }};
+
+		console.log(prices);
+
+		const labels = prices.map(p => p.time_start);
+		const data = prices.map(p => p.NOK_per_kWh);
+
+		const ctx = document.getElementById('priceChart');
+
+		new Chart(ctx, {
+			type: 'line',
+			data: {
+				labels,
+				datasets: [{
+					label: 'NOK per kWh',
+					data,
+					borderWidth: 2,
+					fill: false,
+					tension: 0.2
+				}]
+			}
+		});
+	</script>
+		</body>
+	</html>
+}
