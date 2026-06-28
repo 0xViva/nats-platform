@@ -9,3 +9,9 @@ docker run -d --name nats-server \
   -v "$PWD/jetstream:/data" \
   nats:latest \
   -c /etc/nats/nats.conf
+
+if [ "$(docker ps -q -f name=nats-server)" ]; then
+  echo "Docker container 'nats-server' is running"
+else
+  echo "Failed to start docker container 'nats-server'"
+fi
